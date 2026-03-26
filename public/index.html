@@ -141,7 +141,7 @@ h1{font-size:22px;font-weight:700;margin-bottom:4px}
 <script>
 // Config Supabase (public anon key — lecture seule)
 const SB_URL = 'https://iagsrbmeviwmozauhenk.supabase.co';
-const SB_ANON = 'SUPABASE_ANON_KEY_PLACEHOLDER';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU';
 
 // Données de fallback (capturées le 25 mars 2026 sur Google Flights)
 const FALLBACK = [
@@ -159,7 +159,7 @@ let sel = new Set();
 let sortKey = 'price';
 
 async function loadFromSupabase() {
-  if (SB_ANON === 'SUPABASE_ANON_KEY_PLACEHOLDER') return null;
+  if (SB_ANON === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU') return null;
   try {
     const res = await fetch(SB_URL + '/rest/v1/vols_praia?select=*&order=price.asc', {
       headers: {
@@ -174,7 +174,7 @@ async function loadFromSupabase() {
 }
 
 async function loadLastUpdate() {
-  if (SB_ANON === 'SUPABASE_ANON_KEY_PLACEHOLDER') return null;
+  if (SB_ANON === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU') return null;
   try {
     const res = await fetch(SB_URL + '/rest/v1/vols_praia_log?select=updated_at,min_price&order=updated_at.desc&limit=1', {
       headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON }
