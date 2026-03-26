@@ -163,8 +163,9 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px}
 <div class="toast" id="toast">✓ Copié !</div>
 
 <script>
-const SB_URL='https://iagsrbmeviwmozauhenk.supabase.co';
-const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU';
+// Source de données : Google Sheets (public, lecture seule)
+const SHEET_ID='1rt-lQ6J0ysLDSocsqQw9ITMqVmG5vhZCC3sQmc4GlqI';
+const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=vols`;
 
 const FALLBACK=[
   {rank:1,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'9h25',dur_min:565,stops:1,stop_txt:'1 escale · Lisbonne (2h30)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:true},
@@ -340,17 +341,35 @@ function openComparators(){
   setTimeout(()=>window.open(L.momondo,'_blank'),600);
 }
 
-async function loadSB(){
+async function loadSheet(){
   try{
-    const r=await fetch(SB_URL+'/rest/v1/vols_praia?select=*&order=price.asc',{headers:{apikey:SB_ANON,Authorization:'Bearer '+SB_ANON}});
-    if(!r.ok)return null; const d=await r.json(); return d&&d.length?d:null;
-  }catch{return null;}
+    const r=await fetch(SHEET_URL);
+    if(!r.ok)return null;
+    const txt=await r.text();
+    // Google gviz enveloppe le JSON dans google.visualization.Query.setResponse(...)
+    const json=JSON.parse(txt.replace(/^[^(]+\(|\);?$/g,''));
+    const rows=json.table.rows;
+    const cols=json.table.cols.map(c=>c.label);
+    if(!rows||!rows.length)return null;
+    return rows.map(row=>{
+      const obj={};
+      cols.forEach((col,i)=>{
+        const v=row.c[i];
+        obj[col]=v?v.v:null;
+      });
+      // Normaliser les types
+      obj.price=Number(obj.price)||0;
+      obj.dur_min=Number(obj.dur_min)||0;
+      obj.stops=Number(obj.stops)||0;
+      obj.rank=Number(obj.rank)||0;
+      obj.best=(obj.best==='true'||obj.best===true);
+      return obj;
+    }).filter(f=>f.price>0);
+  }catch(e){console.warn('Sheet error:',e);return null;}
 }
 async function loadLog(){
-  try{
-    const r=await fetch(SB_URL+'/rest/v1/vols_praia_log?select=updated_at,min_price&order=updated_at.desc&limit=1',{headers:{apikey:SB_ANON,Authorization:'Bearer '+SB_ANON}});
-    const d=await r.json(); return d&&d.length?d[0]:null;
-  }catch{return null;}
+  // Log depuis le sheet : lire la dernière ligne de mise à jour
+  return null; // géré directement dans init()
 }
 
 function stopsClass(n){return n===0?'direct':n===1?'one':'two';}
@@ -434,24 +453,29 @@ function copyAs(fmt){
 
 async function init(){
   updateLinks();
-  const live=await loadSB(), log=await loadLog();
+  const live=await loadSheet();
   const alertEl=g('alertBox'), alertTxt=g('alertTxt');
-  if(live){
-    DATA=live;
-    const upd=log?new Date(log.updated_at).toLocaleString('fr-FR'):'Aujourd\'hui';
-    g('updLabel').textContent='Mis à jour '+upd+' · Prix min : '+live[0]?.price+' EUR';
-    g('priceBadge').textContent='💰 Depuis '+live[0]?.price+' EUR';
+  if(live&&live.length){
+    DATA=live.sort((a,b)=>a.price-b.price);
+    const src=live[0].source||'Google Sheets';
+    g('updLabel').textContent='Source : '+src+' · Prix min : '+live[0].price+' EUR';
+    g('priceBadge').textContent='💰 Depuis '+live[0].price+' EUR';
     alertEl.classList.add('on');
-    alertTxt.textContent='Prix live depuis Supabase. Minimum : '+live[0]?.price+' EUR avec '+live[0]?.airline+'.';
+    alertTxt.textContent='';
+    const s=document.createElement('strong');s.textContent=live[0].price+' EUR A/R';
+    alertTxt.appendChild(document.createTextNode('Prix minimum : '));
+    alertTxt.appendChild(s);
+    alertTxt.appendChild(document.createTextNode(' avec '+live[0].airline+' · '+src));
   } else {
     DATA=FALLBACK;
-    g('updLabel').textContent='Données du 25/03/2026 · Cliquer "Ouvrir comparateurs" pour du live';
-    g('priceBadge').textContent='🔴 Paris→Praia : 309 EUR';
+    g('updLabel').textContent='Données du 25/03/2026 (fallback)';
+    g('priceBadge').textContent='💰 Depuis 309 EUR';
     alertEl.classList.add('on');
-    alertTxt.textContent='Données capturées le 25 mars 2026. Prix minimum constaté : ';
+    alertTxt.textContent='';
     const s=document.createElement('strong');s.textContent='309 EUR A/R';
+    alertTxt.appendChild(document.createTextNode('Prix capturé le 25/03 · '));
     alertTxt.appendChild(s);
-    alertTxt.appendChild(document.createTextNode(' avec TAP via Lisbonne. -104 EUR vs prix habituel.'));
+    alertTxt.appendChild(document.createTextNode(' TAP via Lisbonne · -104 EUR vs habituel'));
   }
   applySort();render();
 }
