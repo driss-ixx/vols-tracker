@@ -28,6 +28,7 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px}
 .btn-sec{background:var(--s2);color:var(--t);border:1px solid var(--b)}.btn-sec:hover{background:#2d333b}
 .btn-green{background:#1a4a2a;color:var(--green);border:1px solid #2ea043}.btn-green:hover{background:#1e5a32}
 .btn-green:disabled{opacity:.4;cursor:not-allowed}
+.btn-search{background:var(--blue);color:#000;font-size:13px;padding:9px 20px}.btn-search:hover{background:#79c0ff}
 .cmp-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .cmp-link{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;text-decoration:none;border:1px solid var(--b);background:var(--s2);color:var(--m);transition:all .15s}
 .cmp-link:hover{color:var(--t);border-color:var(--m)}
@@ -121,8 +122,8 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px}
     <div class="field"><label>Passagers</label><input id="adults" type="number" min="1" max="9" value="1"></div>
   </div>
   <div class="search-actions">
-    <button class="btn btn-acc" onclick="openComparators()">🚀 Ouvrir tous les comparateurs</button>
-    <button class="btn btn-sec" onclick="updateLinks()">🔄 Mettre à jour les liens</button>
+    <button class="btn btn-search" onclick="search()">🔍 Rechercher</button>
+    <button class="btn btn-sec" onclick="openComparators()">🚀 Tous les comparateurs</button>
   </div>
   <div class="cmp-links" id="cmpLinks"></div>
 </div>
@@ -217,6 +218,8 @@ function swapAirports(){
   g('dateOut').value=f.in; g('dateIn').value=f.out;
   updateLinks();
 }
+
+function search(){updateLinks();openComparators();}
 
 function openComparators(){
   const f=getF(),L=buildLinks(f);
@@ -342,6 +345,12 @@ async function init(){
 }
 
 init();
+
+// Touche Entrée sur tous les champs = Rechercher
+['depCity','arrCity','depCode','arrCode','dateOut','dateIn','adults'].forEach(id=>{
+  const el=g(id);if(!el)return;
+  el.addEventListener('keydown',e=>{if(e.key==='Enter')search();});
+});
 </script>
 </body>
 </html>
