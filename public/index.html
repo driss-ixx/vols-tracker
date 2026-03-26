@@ -219,49 +219,64 @@ function swapAirports(){
   updateLinks();
 }
 
+function isParaiRoute(f){
+  const arrLow=(f.arrCity||'').toLowerCase().replace(/[-\s]/g,'');
+  const praia=['rai','praia','capvert','capverde','capeverde','caboverde'].some(k=>arrLow.includes(k));
+  return f.dep==='PAR' && (f.arr==='RAI'||praia);
+}
+
+function showComparators(f){
+  updateLinks();
+  g('secLabel').textContent='Recherche : '+f.depCity+' → '+f.arrCity;
+  g('priceBadge').textContent='🔎 '+f.dep+'→'+f.arr;
+  const L=buildLinks(f);
+  const grid=g('grid');grid.textContent='';
+
+  const title=document.createElement('div');
+  title.style.cssText='font-size:14px;font-weight:700;color:var(--t);margin-bottom:14px;padding:12px 14px;background:var(--s);border:1px solid var(--b);border-radius:9px';
+  title.textContent='✈ '+f.depCity+' ('+f.dep+') → '+f.arrCity+' ('+f.arr+') · '+fmtD(f.out)+' – '+fmtD(f.in)+' · '+f.adults+' adulte(s)';
+  grid.appendChild(title);
+
+  const info=document.createElement('div');info.style.cssText='font-size:12px;color:var(--m);margin-bottom:12px';
+  info.textContent='Aucun prix enregistré pour cette route. Cliquez sur un comparateur ci-dessous pour chercher en direct :';
+  grid.appendChild(info);
+
+  [{name:'Google Flights',emoji:'🟢',desc:'Référence mondiale — prix les plus bas',url:L.google,color:'#2ea043'},
+   {name:'Kiwi.com',emoji:'🔵',desc:'Self-transfers, vols cachés, prix imbattables',url:L.kiwi,color:'#58a6ff'},
+   {name:'Momondo',emoji:'🟠',desc:'Comparateur multi-sources',url:L.momondo,color:'#f0a500'},
+   {name:'Skyscanner',emoji:'🔴',desc:'Alerte prix, dates flexibles',url:L.sky,color:'#f85149'},
+  ].forEach(c=>{
+    const a=document.createElement('a');
+    a.href=c.url;a.target='_blank';
+    a.style.cssText='display:flex;align-items:center;gap:14px;background:var(--s);border:2px solid var(--b);border-radius:10px;padding:15px 18px;text-decoration:none;color:var(--t);transition:all .15s;margin-bottom:9px;cursor:pointer';
+    a.onmouseover=()=>{a.style.borderColor=c.color;a.style.background='#1c2128';};
+    a.onmouseout=()=>{a.style.borderColor='var(--b)';a.style.background='var(--s)';};
+    const em=document.createElement('span');em.style.fontSize='24px';em.textContent=c.emoji;
+    const inf=document.createElement('div');inf.style.flex='1';
+    const nm=document.createElement('div');nm.style.cssText='font-weight:700;font-size:14px';nm.textContent=c.name;
+    const ds=document.createElement('div');ds.style.cssText='font-size:11px;color:var(--m);margin-top:3px';ds.textContent=c.desc;
+    inf.appendChild(nm);inf.appendChild(ds);
+    const arrow=document.createElement('span');arrow.style.cssText='color:var(--m);font-size:18px;font-weight:700';arrow.textContent='›';
+    a.appendChild(em);a.appendChild(inf);a.appendChild(arrow);
+    grid.appendChild(a);
+  });
+  // scroll vers les résultats
+  grid.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function search(){
   updateLinks();
   const f=getF();
-  const isDefault=(f.dep==='PAR'&&f.arr==='RAI');
-  if(isDefault){
-    applySort();render();
+  if(isParaiRoute(f)){
+    g('secLabel').textContent='Paris → Praia (Cap Vert)';
+    if(DATA&&DATA.length){applySort();render();}
+    else{
+      // fallback visible si Supabase vide
+      DATA=FALLBACK;applySort();render();
+    }
+    g('grid').scrollIntoView({behavior:'smooth',block:'start'});
   } else {
-    DATA=[];sorted=[];sel.clear();
-    g('secLabel').textContent='Recherche : '+f.depCity+' → '+f.arrCity;
-    g('priceBadge').textContent='🔎 '+f.dep+'→'+f.arr;
-    const L=buildLinks(f);
-    const grid=g('grid');grid.textContent='';
-
-    // Bloc titre
-    const title=document.createElement('div');title.style.cssText='font-size:14px;font-weight:700;color:var(--t);margin-bottom:12px';
-    title.textContent='✈ '+f.depCity+' ('+f.dep+') → '+f.arrCity+' ('+f.arr+') · '+fmtD(f.out)+' – '+fmtD(f.in)+' · '+f.adults+' adulte(s)';
-    grid.appendChild(title);
-
-    // Cartes comparateurs cliquables
-    const comparators=[
-      {name:'Google Flights',emoji:'🟢',desc:'Référence, prix les plus bas',url:L.google,color:'#2ea043'},
-      {name:'Kiwi.com',emoji:'🔵',desc:'Self-transfers, vols cachés',url:L.kiwi,color:'#58a6ff'},
-      {name:'Momondo',emoji:'🟠',desc:'Comparateur multi-sources',url:L.momondo,color:'#f0a500'},
-      {name:'Skyscanner',emoji:'🔴',desc:'Alerte prix, flexibilité dates',url:L.sky,color:'#f85149'},
-    ];
-    comparators.forEach(c=>{
-      const a=document.createElement('a');
-      a.href=c.url;a.target='_blank';a.style.cssText='display:flex;align-items:center;gap:14px;background:var(--s);border:1px solid var(--b);border-radius:10px;padding:14px 18px;text-decoration:none;color:var(--t);transition:all .15s;margin-bottom:8px';
-      a.onmouseover=()=>{a.style.borderColor=c.color;a.style.background='#1c2128';};
-      a.onmouseout=()=>{a.style.borderColor='var(--b)';a.style.background='var(--s)';};
-      const em=document.createElement('span');em.style.fontSize='22px';em.textContent=c.emoji;
-      const info=document.createElement('div');info.style.flex='1';
-      const nm=document.createElement('div');nm.style.cssText='font-weight:700;font-size:14px';nm.textContent=c.name;
-      const ds=document.createElement('div');ds.style.cssText='font-size:11px;color:var(--m);margin-top:2px';ds.textContent=c.desc;
-      info.appendChild(nm);info.appendChild(ds);
-      const arr=document.createElement('span');arr.style.cssText='color:var(--m);font-size:16px';arr.textContent='→';
-      a.appendChild(em);a.appendChild(info);a.appendChild(arr);
-      grid.appendChild(a);
-    });
-
-    const note=document.createElement('div');note.style.cssText='font-size:11px;color:var(--m);margin-top:8px;text-align:center';
-    note.textContent='Cliquez sur un comparateur pour voir les vrais prix en direct';
-    grid.appendChild(note);
+    showComparators(f);
   }
 }
 
