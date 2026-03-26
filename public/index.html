@@ -219,7 +219,31 @@ function swapAirports(){
   updateLinks();
 }
 
-function search(){updateLinks();openComparators();}
+function search(){
+  updateLinks();
+  const f=getF();
+  const isDefault=(f.dep==='PAR'&&f.arr==='RAI');
+  if(isDefault){
+    // Route Paris→Praia : afficher les données sauvegardées
+    applySort();render();
+  } else {
+    // Autre route : afficher placeholder + ouvrir comparateurs
+    DATA=[];sorted=[];sel.clear();
+    g('secLabel').textContent='Résultats pour '+f.depCity+' → '+f.arrCity;
+    const grid=g('grid');grid.textContent='';
+    const msg=document.createElement('div');msg.className='loading';
+    msg.textContent='';
+    const ico=document.createElement('span');ico.textContent='🔍 ';
+    const txt=document.createElement('span');
+    txt.textContent='Ouverture des comparateurs pour '+f.depCity+' ('+f.dep+') → '+f.arrCity+' ('+f.arr+') du '+fmtD(f.out)+' au '+fmtD(f.in)+'…';
+    msg.appendChild(ico);msg.appendChild(txt);
+    const sub=document.createElement('div');sub.style.cssText='margin-top:10px;font-size:11px;color:var(--m)';
+    sub.textContent='Les résultats sauvegardés ne sont disponibles que pour Paris → Praia. Consultez les onglets ouverts.';
+    msg.appendChild(sub);grid.appendChild(msg);
+    g('priceBadge').textContent='🔎 '+f.dep+'→'+f.arr;
+    openComparators();
+  }
+}
 
 function openComparators(){
   const f=getF(),L=buildLinks(f);
