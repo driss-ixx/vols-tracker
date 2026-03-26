@@ -4,8 +4,5 @@
       "path": "/api/update",
       "schedule": "0 5 * * *"
     }
-  ],
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" }
   ]
 }
