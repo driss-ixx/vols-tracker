@@ -1,133 +1,125 @@
 // api/update.js — Vercel Serverless Function
-// Appelée tous les jours à 5h par Vercel Cron
-// Récupère les prix depuis Amadeus API et met à jour Supabase
+// Appelée chaque jour à 5h par Vercel Cron
+// Récupère les prix Google Flights via SerpAPI → stocke dans Supabase
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const AMADEUS_KEY  = process.env.AMADEUS_API_KEY;
-const AMADEUS_SECRET = process.env.AMADEUS_API_SECRET;
-const CRON_SECRET  = process.env.CRON_SECRET;
+const SUPABASE_URL    = process.env.SUPABASE_URL;
+const SUPABASE_KEY    = process.env.SUPABASE_SERVICE_KEY;
+const SERPAPI_KEY     = process.env.SERPAPI_KEY;
+const CRON_SECRET     = process.env.CRON_SECRET;
 
-// Paramètres du vol à surveiller
-const SEARCH = {
-  originLocationCode: 'PAR',
-  destinationLocationCode: 'RAI',
-  departureDate: '2026-05-06',
-  returnDate: '2026-05-13',
-  adults: 1,
-  currencyCode: 'EUR',
-  max: 15,
+// Paramètres du vol
+const PARAMS = {
+  engine: 'google_flights',
+  departure_id: 'PAR',
+  arrival_id: 'RAI',
+  outbound_date: '2026-05-06',
+  return_date: '2026-05-13',
+  currency: 'EUR',
+  hl: 'fr',
+  type: '1',        // 1 = aller-retour
+  adults: '1',
+  sort_by: '1',     // 1 = par prix
+  stops: '0',       // 0 = tous
+  api_key: '',      // injecté dynamiquement
 };
 
-async function getAmadeusToken() {
-  const res = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: AMADEUS_KEY,
-      client_secret: AMADEUS_SECRET,
-    }),
-  });
-  const data = await res.json();
-  return data.access_token;
-}
-
-async function fetchFlights(token) {
-  const params = new URLSearchParams(SEARCH);
-  const res = await fetch(
-    `https://test.api.amadeus.com/v2/shopping/flight-offers?${params}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+async function fetchFlights() {
+  const params = new URLSearchParams({ ...PARAMS, api_key: SERPAPI_KEY });
+  const res = await fetch(`https://serpapi.com/search.json?${params}`);
+  if (!res.ok) throw new Error(`SerpAPI error ${res.status}: ${await res.text()}`);
   return res.json();
 }
 
-function parseOffer(offer) {
-  const itin = offer.itineraries;
-  const aller = itin[0];
-  const retour = itin[1];
-  const seg0 = aller.segments[0];
-  const segLast = aller.segments[aller.segments.length - 1];
-  const retSeg0 = retour.segments[0];
-  const retSegLast = retour.segments[retour.segments.length - 1];
+function parseResult(data) {
+  const results = [];
 
-  const stops = aller.segments.length - 1;
-  const stopDetail = stops === 0
-    ? 'Direct'
-    : aller.segments.slice(0, -1).map(s => s.arrival.iataCode).join(' + ');
+  // Vols "best_flights" (les meilleurs)
+  const allOffers = [
+    ...(data.best_flights || []),
+    ...(data.other_flights || []),
+  ];
 
-  const depTime = seg0.departure.at.slice(11, 16);
-  const arrTime = segLast.arrival.at.slice(11, 16);
-  const retDepTime = retSeg0.departure.at.slice(11, 16);
-  const retArrTime = retSegLast.arrival.at.slice(11, 16);
+  allOffers.forEach((offer, i) => {
+    const flights = offer.flights || [];
+    if (!flights.length) return;
 
-  // Durée aller
-  const durRaw = aller.duration; // PT9H25M
-  const durMatch = durRaw.match(/PT(\d+)H(\d+)M/);
-  const durMin = durMatch ? parseInt(durMatch[1]) * 60 + parseInt(durMatch[2]) : 0;
-  const durTxt = durMatch ? `${durMatch[1]}h${durMatch[2]}` : durRaw;
+    const first = flights[0];
+    const last = flights[flights.length - 1];
+    const stops = flights.length - 1;
 
-  const carriers = [...new Set(aller.segments.map(s => s.carrierCode))];
-  const price = parseFloat(offer.price.total);
+    const stopAirports = flights
+      .slice(0, -1)
+      .map(f => f.arrival_airport?.id || '')
+      .filter(Boolean)
+      .join(' + ');
 
-  return {
-    airline: carriers.join('+'),
-    code: carriers[0],
-    dep: depTime,
-    arr: arrTime,
-    depA: seg0.departure.iataCode,
-    arrA: segLast.arrival.iataCode,
-    dur: durTxt,
-    dur_min: durMin,
-    stops,
-    stop_txt: stops === 0 ? 'Sans escale' : `${stops} escale(s) · ${stopDetail}`,
-    price,
-    ret: `${retSeg0.departure.iataCode} ${retDepTime} → ${retSegLast.arrival.iataCode} ${retArrTime}`,
-    source: 'Amadeus API',
-    updated_at: new Date().toISOString(),
-    offer_id: offer.id,
-  };
+    const stopTxt = stops === 0
+      ? 'Direct'
+      : `${stops} escale${stops > 1 ? 's' : ''} · ${stopAirports}`;
+
+    // Retour
+    const retFlights = offer.layovers || [];
+    const retTxt = offer.return_flight
+      ? `${offer.return_flight.departure_airport?.id} ${offer.return_flight.departure_time} > ${offer.return_flight.arrival_airport?.id} ${offer.return_flight.arrival_time}`
+      : 'Voir Google Flights';
+
+    // Durée en minutes
+    const totalDur = offer.total_duration || 0;
+    const durH = Math.floor(totalDur / 60);
+    const durM = totalDur % 60;
+    const durTxt = `${durH}h${durM.toString().padStart(2, '0')}`;
+
+    const airlines = [...new Set(flights.map(f => f.airline))].join('+');
+
+    results.push({
+      rank: i + 1,
+      airline: airlines,
+      code: flights[0]?.airline_logo ? airlines.slice(0, 2).toUpperCase() : 'XX',
+      dep: first.departure_airport?.time?.slice(0, 5) || '',
+      arr: last.arrival_airport?.time?.slice(0, 5) || '',
+      depA: first.departure_airport?.id || 'PAR',
+      arrA: last.arrival_airport?.id || 'RAI',
+      dur: durTxt,
+      dur_min: totalDur,
+      stops,
+      stop_txt: stopTxt,
+      price: offer.price,
+      ret: retTxt,
+      source: 'Google Flights via SerpAPI',
+      url: 'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',
+      best: i === 0,
+      offer_id: `serp_${Date.now()}_${i}`,
+      updated_at: new Date().toISOString(),
+    });
+  });
+
+  return results.sort((a, b) => a.price - b.price).slice(0, 10);
 }
 
 export default async function handler(req, res) {
-  // Sécurité : vérifier le secret cron (Vercel le passe en header)
   const authHeader = req.headers['authorization'];
   if (authHeader !== `Bearer ${CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    // 1. Token Amadeus
-    const token = await getAmadeusToken();
+    const data = await fetchFlights();
+    const flights = parseResult(data);
 
-    // 2. Récupérer les offres
-    const data = await fetchFlights(token);
-    if (!data.data || data.data.length === 0) {
-      return res.status(200).json({ message: 'No flights found', raw: data });
+    if (!flights.length) {
+      return res.status(200).json({ message: 'No flights parsed', raw: data });
     }
 
-    // 3. Parser les offres
-    const flights = data.data
-      .map(parseOffer)
-      .sort((a, b) => a.price - b.price)
-      .slice(0, 10);
-
-    // 4. Mettre à jour Supabase
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Vider l'ancienne data
+    // Vider + réinsérer
     await sb.from('vols_praia').delete().neq('id', 0);
-
-    // Insérer les nouvelles offres
-    const { error } = await sb.from('vols_praia').insert(
-      flights.map((f, i) => ({ rank: i + 1, ...f }))
-    );
-
+    const { error } = await sb.from('vols_praia').insert(flights);
     if (error) throw error;
 
-    // Log de la mise à jour
+    // Log
     await sb.from('vols_praia_log').insert({
       updated_at: new Date().toISOString(),
       nb_results: flights.length,
