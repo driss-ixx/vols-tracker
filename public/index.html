@@ -3,396 +3,342 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vols Paris Praia · 6-13 mai 2026</title>
+<title>Tracker Vols</title>
 <style>
 :root{--bg:#0d1117;--s:#161b22;--s2:#21262d;--b:#30363d;--accent:#f0a500;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--t:#e6edf3;--m:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;min-height:100vh;max-width:900px;margin:0 auto}
-h1{font-size:22px;font-weight:700;margin-bottom:4px}
-.sub{font-size:13px;color:var(--m)}
-.header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px}
-.badge{background:#2a1f00;border:1px solid var(--accent);color:var(--accent);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600}
-.alert{background:linear-gradient(135deg,#0d2818,#0d1f30);border:1px solid #2ea043;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:14px;display:flex;gap:12px;align-items:center}
-.alert strong{color:var(--green)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
-.btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-decoration:none}
-.btn-sec{background:var(--s2);color:var(--t);border:1px solid var(--b)}
-.btn-sec:hover{background:#2d333b}
-.btn-green{background:#1a4a2a;color:var(--green);border:1px solid #2ea043}
-.btn-green:hover{background:#1e5a32}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:20px;max-width:960px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:2px}
+.sub{font-size:12px;color:var(--m)}
+.header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.badge{background:#2a1f00;border:1px solid var(--accent);color:var(--accent);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.upd{font-size:11px;color:var(--m);display:flex;align-items:center;gap:6px;margin-top:4px}
+.upd-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.search-box{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px;margin-bottom:18px}
+.search-box h2{font-size:11px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.fields{display:grid;grid-template-columns:1fr auto 1fr 1fr 1fr;gap:8px;align-items:end}
+.field label{display:block;font-size:10px;color:var(--m);font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:7px;padding:8px 10px;color:var(--t);font-size:13px;transition:border .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+.swap-btn{background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:8px 10px;color:var(--m);cursor:pointer;font-size:15px;transition:all .15s;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.swap-btn:hover{color:var(--accent);border-color:var(--accent)}
+.search-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{padding:8px 14px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .15s;text-decoration:none;white-space:nowrap}
+.btn-acc{background:var(--accent);color:#000}.btn-acc:hover{background:#ffbb33}
+.btn-sec{background:var(--s2);color:var(--t);border:1px solid var(--b)}.btn-sec:hover{background:#2d333b}
+.btn-green{background:#1a4a2a;color:var(--green);border:1px solid #2ea043}.btn-green:hover{background:#1e5a32}
 .btn-green:disabled{opacity:.4;cursor:not-allowed}
-.btn-blue{background:var(--blue);color:#000}
-.btn-blue:hover{background:#79c0ff}
-.sel-count{font-size:13px;color:var(--m);margin-left:auto}
+.cmp-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.cmp-link{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;text-decoration:none;border:1px solid var(--b);background:var(--s2);color:var(--m);transition:all .15s}
+.cmp-link:hover{color:var(--t);border-color:var(--m)}
+.alert{background:linear-gradient(135deg,#0d2818,#0d1f30);border:1px solid #2ea043;border-radius:9px;padding:11px 14px;margin-bottom:14px;font-size:13px;display:none;gap:9px;align-items:center}
+.alert.on{display:flex}
+.alert strong{color:var(--green)}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.sel-count{font-size:11px;color:var(--m);margin-left:auto}
 .sel-count span{color:var(--green);font-weight:700}
-.tabs{display:flex;gap:4px;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:4px;width:fit-content;margin-bottom:16px}
-.tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;color:var(--m);cursor:pointer;font-size:13px;transition:all .15s}
+.tabs{display:flex;gap:3px;background:var(--s);border:1px solid var(--b);border-radius:7px;padding:3px;width:fit-content;margin-bottom:12px}
+.tab{padding:5px 11px;border-radius:5px;border:none;background:transparent;color:var(--m);cursor:pointer;font-size:11px;transition:all .15s}
 .tab.active{background:var(--s2);color:var(--t);font-weight:600}
 .tab:hover:not(.active){color:var(--t)}
-.grid{display:flex;flex-direction:column;gap:10px}
-.card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all .15s;position:relative;display:grid;grid-template-columns:24px 1fr auto;gap:16px;align-items:start}
+.grid{display:flex;flex-direction:column;gap:7px}
+.sec-label{font-size:10px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.loading{text-align:center;padding:30px;color:var(--m);font-size:13px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:13px 16px;cursor:pointer;transition:all .15s;position:relative;display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start}
 .card:hover{border-color:#444c56;background:#1c2128}
 .card.sel{background:#0d1f0d;border-color:var(--green)}
 .card.best{border-color:var(--accent)}
-.best-tag{position:absolute;top:-1px;left:20px;background:var(--accent);color:#000;font-size:10px;font-weight:800;padding:2px 10px;border-radius:0 0 6px 6px;letter-spacing:.5px}
-.chk{width:20px;height:20px;border:2px solid var(--b);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:2px}
-.card.sel .chk{background:var(--green);border-color:var(--green);color:#000;font-weight:700;font-size:13px}
-.mid{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:center}
-.airline{display:flex;flex-direction:column;gap:3px}
-.a-name{font-size:13px;font-weight:700}
-.a-code{font-size:11px;color:var(--m)}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.tag{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--b);background:var(--s2);color:var(--m)}
-.route{display:flex;align-items:center;gap:10px;flex:1}
+.best-tag{position:absolute;top:-1px;left:16px;background:var(--accent);color:#000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:0 0 4px 4px;letter-spacing:.5px}
+.chk{width:17px;height:17px;border:2px solid var(--b);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;font-weight:700}
+.card.sel .chk{background:var(--green);border-color:var(--green);color:#000}
+.mid{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}
+.airline{display:flex;flex-direction:column;gap:2px}
+.a-name{font-size:12px;font-weight:700}
+.a-code{font-size:10px;color:var(--m)}
+.route{display:flex;align-items:center;gap:8px;flex:1}
 .rp{text-align:center;flex-shrink:0}
-.rt{font-size:18px;font-weight:700}
-.ra{font-size:11px;color:var(--m);font-weight:600}
-.rl{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.rd{font-size:11px;color:var(--m)}
+.rt{font-size:16px;font-weight:700}
+.ra{font-size:10px;color:var(--m);font-weight:600}
+.rl{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.rd{font-size:10px;color:var(--m)}
 .rbar{width:100%;height:1px;background:var(--b)}
-.rs{font-size:11px}
-.rs.direct{color:var(--green)}
-.rs.one{color:var(--accent)}
-.rs.two{color:var(--red)}
-.ret{font-size:11px;color:var(--m);margin-top:6px;grid-column:1/-1}
-.price-col{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;min-width:100px}
-.price{font-size:26px;font-weight:800;line-height:1}
-.p-label{font-size:11px;color:var(--m)}
-.saving{background:#0d2818;color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;border:1px solid #2ea043}
-.book{display:inline-flex;align-items:center;gap:4px;background:var(--blue);color:#000;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none;transition:all .15s}
+.rs{font-size:10px}
+.rs.direct{color:var(--green)}.rs.one{color:var(--accent)}.rs.two{color:var(--red)}
+.ret{font-size:10px;color:var(--m);margin-top:4px;grid-column:1/-1}
+.pc{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;min-width:85px}
+.price{font-size:21px;font-weight:800;line-height:1}
+.p-label{font-size:10px;color:var(--m)}
+.saving{background:#0d2818;color:var(--green);font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;border:1px solid #2ea043}
+.book{display:inline-flex;align-items:center;gap:3px;background:var(--blue);color:#000;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:700;text-decoration:none}
 .book:hover{background:#79c0ff}
-.panel{position:fixed;bottom:24px;right:24px;background:var(--s);border:1px solid var(--b);border-radius:12px;padding:16px;width:300px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;flex-direction:column;gap:10px;z-index:100}
+.panel{position:fixed;bottom:18px;right:18px;background:var(--s);border:1px solid var(--b);border-radius:11px;padding:13px;width:270px;box-shadow:0 8px 32px rgba(0,0,0,.7);display:none;flex-direction:column;gap:7px;z-index:100}
 .panel.on{display:flex}
-.panel h3{font-size:14px}
-.panel p{font-size:12px;color:var(--m)}
-.fmt-btn{padding:9px 12px;border-radius:6px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:12px;text-align:left;transition:all .15s;width:100%}
+.panel h3{font-size:13px}
+.panel p{font-size:11px;color:var(--m)}
+.fmt-btn{padding:7px 10px;border-radius:5px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:11px;text-align:left;width:100%}
 .fmt-btn:hover{border-color:var(--accent);color:var(--accent)}
-.toast{position:fixed;bottom:80px;right:24px;background:var(--green);color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:200}
+.toast{position:fixed;bottom:65px;right:18px;background:var(--green);color:#000;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:200}
 .toast.on{opacity:1;transform:translateY(0)}
-.footer{font-size:11px;color:var(--m);margin-top:20px;text-align:center}
+.footer{font-size:10px;color:var(--m);margin-top:14px;text-align:center}
 .footer a{color:var(--blue);text-decoration:none}
-.footer a:hover{text-decoration:underline}
-.sec-label{font-size:11px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.upd{font-size:12px;color:var(--m);display:flex;align-items:center;gap:8px;margin-top:6px}
-.upd-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.loading{text-align:center;padding:40px;color:var(--m);font-size:14px}
-.error-msg{background:#2a0d0d;border:1px solid var(--red);border-radius:8px;padding:14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
-@media(max-width:640px){.mid{grid-template-columns:1fr}.card{grid-template-columns:24px 1fr}.price-col{align-items:flex-start}.panel{width:calc(100vw - 48px)}}
+@media(max-width:600px){.fields{grid-template-columns:1fr 1fr}.mid{grid-template-columns:1fr}.card{grid-template-columns:20px 1fr}.pc{flex-direction:row;align-items:center;gap:8px}.panel{width:calc(100vw - 36px)}}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div>
-    <h1>✈ Paris → Praia &nbsp;·&nbsp; 6–13 mai 2026</h1>
-    <div class="sub">1 adulte · Classe éco · Aller-retour · Mise à jour auto 5h/jour</div>
-    <div class="upd">
-      <div class="upd-dot"></div>
-      <span id="updLabel">Chargement des prix...</span>
+    <h1 id="routeTitle">✈ Tracker Vols</h1>
+    <div class="sub">Comparez n'importe quelle route · Sélectionnez · Copiez</div>
+    <div class="upd"><div class="upd-dot"></div><span id="updLabel">Chargement...</span></div>
+  </div>
+  <div class="badge" id="priceBadge">🔎 Recherche</div>
+</div>
+
+<div class="search-box">
+  <h2>🔍 Votre recherche</h2>
+  <div class="fields">
+    <div class="field">
+      <label>Ville départ</label>
+      <input id="depCity" placeholder="Paris" value="Paris">
+    </div>
+    <button class="swap-btn" onclick="swapAirports()" title="Inverser">⇄</button>
+    <div class="field">
+      <label>Ville arrivée</label>
+      <input id="arrCity" placeholder="Praia" value="Praia">
+    </div>
+    <div class="field">
+      <label>Code départ</label>
+      <input id="depCode" placeholder="PAR" value="PAR" style="text-transform:uppercase" maxlength="3">
+    </div>
+    <div class="field">
+      <label>Code arrivée</label>
+      <input id="arrCode" placeholder="RAI" value="RAI" style="text-transform:uppercase" maxlength="3">
     </div>
   </div>
-  <div class="badge">🔴 Prix actuellement BAS</div>
+  <div class="fields" style="grid-template-columns:1fr 1fr 1fr;margin-top:8px">
+    <div class="field"><label>Date aller</label><input id="dateOut" type="date" value="2026-05-06"></div>
+    <div class="field"><label>Date retour</label><input id="dateIn" type="date" value="2026-05-13"></div>
+    <div class="field"><label>Passagers</label><input id="adults" type="number" min="1" max="9" value="1"></div>
+  </div>
+  <div class="search-actions">
+    <button class="btn btn-acc" onclick="openComparators()">🚀 Ouvrir tous les comparateurs</button>
+    <button class="btn btn-sec" onclick="updateLinks()">🔄 Mettre à jour les liens</button>
+  </div>
+  <div class="cmp-links" id="cmpLinks"></div>
 </div>
 
-<div class="error-msg" id="errorMsg"></div>
-
-<div class="alert" id="alertBox" style="display:none">
-  <span style="font-size:20px">💡</span>
-  <span id="alertTxt"></span>
-</div>
+<div class="alert on" id="alertBox"><span style="font-size:17px">💡</span><span id="alertTxt"></span></div>
 
 <div class="toolbar">
-  <button class="btn btn-sec" onclick="selectAll()">☑ Tout sélectionner</button>
-  <button class="btn btn-sec" onclick="clearAll()">✕ Désélectionner</button>
-  <button class="btn btn-blue" onclick="refresh()">🔄 Actualiser</button>
+  <button class="btn btn-sec" onclick="selectAll()">☑ Tout</button>
+  <button class="btn btn-sec" onclick="clearAll()">✕ Aucun</button>
   <button class="btn btn-green" id="cpBtn" disabled onclick="openPanel()">📋 Copier (<span id="cnt">0</span>)</button>
-  <div class="sel-count">Sélection : <span id="cnt2">0</span></div>
+  <div class="sel-count">Sélection : <span id="cnt2">0</span> vol(s)</div>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="sort('price',this)">💰 Prix</button>
-  <button class="tab" onclick="sort('duration',this)">⏱ Durée</button>
-  <button class="tab" onclick="sort('stops',this)">🔗 Escales</button>
-  <button class="tab" onclick="sort('airline',this)">✈ Compagnie</button>
+  <button class="tab active" onclick="doSort('price',this)">💰 Prix</button>
+  <button class="tab" onclick="doSort('duration',this)">⏱ Durée</button>
+  <button class="tab" onclick="doSort('stops',this)">🔗 Escales</button>
+  <button class="tab" onclick="doSort('airline',this)">✈ Compagnie</button>
 </div>
 
 <div class="sec-label" id="secLabel">Chargement...</div>
-<div class="grid" id="grid"><div class="loading">⏳ Récupération des prix en cours...</div></div>
+<div class="grid" id="grid"><div class="loading">⏳ Chargement...</div></div>
 
-<div class="footer">
-  Mise à jour auto chaque jour à 5h · Sources live :
-  <a href="https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR" target="_blank">Google Flights</a>
-  · <a href="https://www.kiwi.com/en/search/results/paris-france/praia-cape-verde/2026-05-06/2026-05-13/?adults=1&currency=EUR" target="_blank">Kiwi</a>
-  · <a href="https://www.momondo.fr/flight-search/Paris-PAR/Praia-RAI/2026-05-06/2026-05-13?adults=1" target="_blank">Momondo</a>
-</div>
+<div class="footer">MAJ auto à 5h · <a id="lkGoogle" href="#" target="_blank">Google Flights</a> · <a id="lkKiwi" href="#" target="_blank">Kiwi</a> · <a id="lkMomondo" href="#" target="_blank">Momondo</a> · <a id="lkSky" href="#" target="_blank">Skyscanner</a></div>
 
 <div class="panel" id="panel">
-  <h3>📋 Copier la sélection</h3>
-  <p id="pdesc"></p>
-  <button class="fmt-btn" onclick="copyAs('text')">📝 Texte simple (WhatsApp, SMS)</button>
-  <button class="fmt-btn" onclick="copyAs('markdown')">📄 Markdown (Notion, Obsidian)</button>
+  <h3>📋 Copier</h3><p id="pdesc"></p>
+  <button class="fmt-btn" onclick="copyAs('text')">📝 Texte (WhatsApp)</button>
+  <button class="fmt-btn" onclick="copyAs('markdown')">📄 Markdown (Notion)</button>
   <button class="fmt-btn" onclick="copyAs('table')">📊 Tableau TSV (Excel)</button>
   <button class="fmt-btn" onclick="copyAs('json')">💾 JSON</button>
-  <button class="btn btn-sec" style="font-size:12px;margin-top:4px" onclick="closePanel()">✕ Fermer</button>
+  <button class="btn btn-sec" style="font-size:11px;margin-top:2px" onclick="closePanel()">✕ Fermer</button>
 </div>
-
 <div class="toast" id="toast">✓ Copié !</div>
 
 <script>
-// Config Supabase (public anon key — lecture seule)
-const SB_URL = 'https://iagsrbmeviwmozauhenk.supabase.co';
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU';
+const SB_URL='https://iagsrbmeviwmozauhenk.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU';
 
-// Données de fallback (capturées le 25 mars 2026 sur Google Flights)
-const FALLBACK = [
-  {rank:1,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'9h25',dur_min:565,stops:1,stop_txt:'1 escale · Lisbonne (2h30)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · 1x LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:true},
-  {rank:2,airline:'TAP Air Portugal',code:'TP',dep:'21:15',arr:'11:20+1',depA:'ORY',arrA:'RAI',dur:'17h05',dur_min:1025,stops:1,stop_txt:'1 escale · Lisbonne (10h15)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · 1x LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
-  {rank:3,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'29h15',dur_min:1755,stops:1,stop_txt:'1 escale · Lisbonne (self-transfer)',price:324,ret:'RAI 00:10 > ORY 23:00 · 19h50 · auto',source:'Kiwi.com 25/03',url:'https://www.kiwi.com/en/search/results/paris-france/praia-cape-verde/2026-05-06/2026-05-13/?adults=1&currency=EUR',best:false},
+const FALLBACK=[
+  {rank:1,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'9h25',dur_min:565,stops:1,stop_txt:'1 escale · Lisbonne (2h30)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:true},
+  {rank:2,airline:'TAP Air Portugal',code:'TP',dep:'21:15',arr:'11:20+1',depA:'ORY',arrA:'RAI',dur:'17h05',dur_min:1025,stops:1,stop_txt:'1 escale · Lisbonne (10h15)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
+  {rank:3,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'29h15',dur_min:1755,stops:1,stop_txt:'1 escale · Lisbonne (self-transfer)',price:324,ret:'RAI 00:10 > ORY 23:00 · 19h50',source:'Kiwi.com 25/03',url:'https://www.kiwi.com/en/search/results/paris-france/praia-cape-verde/2026-05-06/2026-05-13/?adults=1&currency=EUR',best:false},
   {rank:4,airline:'Royal Air Maroc',code:'AT',dep:'18:30',arr:'02:50+1',depA:'CDG',arrA:'RAI',dur:'11h20',dur_min:680,stops:2,stop_txt:'2 escales · Casablanca + Sao Vicente',price:383,ret:'Via Casablanca',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
   {rank:5,airline:'Royal Air Maroc',code:'AT',dep:'19:15',arr:'02:50+1',depA:'ORY',arrA:'RAI',dur:'10h35',dur_min:635,stops:2,stop_txt:'2 escales · Casablanca + Sao Vicente',price:410,ret:'Via Casablanca',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
   {rank:6,airline:'Air Senegal',code:'HC',dep:'09:45',arr:'16:00',depA:'CDG',arrA:'RAI',dur:'9h15',dur_min:555,stops:1,stop_txt:'1 escale · Dakar (1h30)',price:647,ret:'Via Dakar',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
 ];
 
-let DATA = [];
-let sorted = [];
-let sel = new Set();
-let sortKey = 'price';
+let DATA=[],sorted=[],sel=new Set(),sortKey='price';
 
-async function loadFromSupabase() {
-  if (SB_ANON === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU') return null;
-  try {
-    const res = await fetch(SB_URL + '/rest/v1/vols_praia?select=*&order=price.asc', {
-      headers: {
-        'apikey': SB_ANON,
-        'Authorization': 'Bearer ' + SB_ANON,
-      }
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data && data.length > 0 ? data : null;
-  } catch { return null; }
+function g(id){return document.getElementById(id)}
+function fmtD(iso){if(!iso)return '';const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y}
+function slug(s){return s.toLowerCase().replace(/\s+/g,'-').replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e').replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/[ùûü]/g,'u')}
+
+function getF(){
+  return{
+    dep:g('depCode').value.toUpperCase().trim()||'PAR',
+    arr:g('arrCode').value.toUpperCase().trim()||'RAI',
+    depCity:g('depCity').value.trim()||'Paris',
+    arrCity:g('arrCity').value.trim()||'Praia',
+    out:g('dateOut').value,
+    in:g('dateIn').value,
+    adults:g('adults').value||'1',
+  };
 }
 
-async function loadLastUpdate() {
-  if (SB_ANON === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZ3NyYm1ldml3bW96YXVoZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NjY3MjgsImV4cCI6MjA4ODE0MjcyOH0.rTu17N3vuLsT_keUMV52s0XMs9W2wTqQnRM0aeGGDpU') return null;
-  try {
-    const res = await fetch(SB_URL + '/rest/v1/vols_praia_log?select=updated_at,min_price&order=updated_at.desc&limit=1', {
-      headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON }
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data && data.length > 0 ? data[0] : null;
-  } catch { return null; }
+function buildLinks(f){
+  return{
+    google:`https://www.google.com/travel/flights?hl=fr#flt=${f.dep}.${f.arr}.${f.out}*${f.arr}.${f.dep}.${f.in};c:EUR;e:1;sd:1;t:f`,
+    kiwi:`https://www.kiwi.com/en/search/results/${slug(f.depCity)}-${f.dep.toLowerCase()}/${slug(f.arrCity)}-${f.arr.toLowerCase()}/${f.out}/${f.in}/?adults=${f.adults}&currency=EUR&sort=price`,
+    momondo:`https://www.momondo.fr/flight-search/${f.dep}/${f.arr}/${f.out.replace(/-/g,'')}/${f.in.replace(/-/g,'')}?adults=${f.adults}`,
+    sky:`https://www.skyscanner.fr/transport/vols/${f.dep.toLowerCase()}/${f.arr.toLowerCase()}/${f.out.replace(/-/g,'')}/${f.in.replace(/-/g,'')}/?adults=${f.adults}`,
+  };
 }
 
-async function refresh() {
-  document.getElementById('grid').textContent = '';
-  const loading = document.createElement('div');
-  loading.className = 'loading';
-  loading.textContent = 'Actualisation...';
-  document.getElementById('grid').appendChild(loading);
-  await init();
+function updateLinks(){
+  const f=getF(),L=buildLinks(f);
+  g('lkGoogle').href=L.google; g('lkKiwi').href=L.kiwi;
+  g('lkMomondo').href=L.momondo; g('lkSky').href=L.sky;
+  g('routeTitle').textContent=`✈ ${f.depCity} (${f.dep}) → ${f.arrCity} (${f.arr}) · ${fmtD(f.out)} – ${fmtD(f.in)}`;
+  document.title=`Vols ${f.dep}→${f.arr} · ${fmtD(f.out)}`;
+
+  const cmp=g('cmpLinks'); cmp.textContent='';
+  [{n:'Google Flights',h:L.google},{n:'Kiwi.com',h:L.kiwi},{n:'Momondo',h:L.momondo},{n:'Skyscanner',h:L.sky}]
+  .forEach(lk=>{const a=document.createElement('a');a.className='cmp-link';a.href=lk.h;a.target='_blank';a.textContent=lk.n;cmp.appendChild(a);});
 }
 
-async function init() {
-  const live = await loadFromSupabase();
-  const log = await loadLastUpdate();
-
-  if (live) {
-    DATA = live;
-    const upd = log ? new Date(log.updated_at).toLocaleString('fr-FR') : 'Aujourd\'hui';
-    document.getElementById('updLabel').textContent = 'Mis a jour le ' + upd + ' · Prix min : ' + (log?.min_price || live[0]?.price) + ' EUR';
-    showAlert('Les prix sont mis a jour automatiquement chaque matin a 5h. Prix minimum actuel : <strong>' + live[0]?.price + ' EUR</strong> avec ' + live[0]?.airline + '.');
-  } else {
-    DATA = FALLBACK;
-    document.getElementById('updLabel').textContent = 'Donnees du 25 mars 2026 (fallback) · Clic Actualiser pour rafraichir';
-    showAlert('Donnees capturees le 25 mars 2026 sur Google Flights. Prix minimum : <strong>309 EUR A/R</strong> avec TAP via Lisbonne. <strong>-104 EUR</strong> vs prix habituel.');
-  }
-
-  applySort();
-  render();
+function swapAirports(){
+  const f=getF();
+  g('depCode').value=f.arr; g('arrCode').value=f.dep;
+  g('depCity').value=f.arrCity; g('arrCity').value=f.depCity;
+  g('dateOut').value=f.in; g('dateIn').value=f.out;
+  updateLinks();
 }
 
-function showAlert(txt) {
-  const box = document.getElementById('alertBox');
-  const t = document.getElementById('alertTxt');
-  box.style.display = 'flex';
-  t.textContent = txt.replace(/<[^>]+>/g, '');
-  const strong = txt.match(/<strong>(.*?)<\/strong>/g);
-  if (strong) {
-    t.textContent = '';
-    let parts = txt.split(/<strong>|<\/strong>/);
-    parts.forEach((p, i) => {
-      if (i % 2 === 0) { const s = document.createTextNode(p); t.appendChild(s); }
-      else { const s = document.createElement('strong'); s.textContent = p; t.appendChild(s); }
-    });
-  }
+function openComparators(){
+  const f=getF(),L=buildLinks(f);
+  window.open(L.google,'_blank');
+  setTimeout(()=>window.open(L.kiwi,'_blank'),300);
+  setTimeout(()=>window.open(L.momondo,'_blank'),600);
 }
 
-function stopsClass(n){ return n===0?'direct':n===1?'one':'two'; }
+async function loadSB(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/vols_praia?select=*&order=price.asc',{headers:{apikey:SB_ANON,Authorization:'Bearer '+SB_ANON}});
+    if(!r.ok)return null; const d=await r.json(); return d&&d.length?d:null;
+  }catch{return null;}
+}
+async function loadLog(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/vols_praia_log?select=updated_at,min_price&order=updated_at.desc&limit=1',{headers:{apikey:SB_ANON,Authorization:'Bearer '+SB_ANON}});
+    const d=await r.json(); return d&&d.length?d[0]:null;
+  }catch{return null;}
+}
 
-function makeCard(f) {
-  const card = document.createElement('div');
-  card.className = 'card' + (sel.has(f.rank)?' sel':'') + (f.best?' best':'');
-  card.dataset.rank = f.rank;
-  card.addEventListener('click', () => toggle(f.rank));
+function stopsClass(n){return n===0?'direct':n===1?'one':'two';}
 
-  if (f.best) {
-    const bt = document.createElement('div');
-    bt.className = 'best-tag';
-    bt.textContent = 'MEILLEUR';
-    card.appendChild(bt);
-  }
-
-  const chk = document.createElement('div');
-  chk.className = 'chk';
-  if (sel.has(f.rank)) chk.textContent = '✓';
-  card.appendChild(chk);
-
-  const mid = document.createElement('div');
-  mid.className = 'mid';
-
-  const ai = document.createElement('div');
-  ai.className = 'airline';
-  const an = document.createElement('div'); an.className = 'a-name'; an.textContent = f.airline;
-  const ac = document.createElement('div'); ac.className = 'a-code'; ac.textContent = f.code + ' · ' + f.source;
-  ai.appendChild(an); ai.appendChild(ac);
-  mid.appendChild(ai);
-
-  const route = document.createElement('div');
-  route.className = 'route';
-  function mkPt(time, ap) {
-    const p = document.createElement('div'); p.className = 'rp';
-    const t = document.createElement('div'); t.className = 'rt'; t.textContent = time;
-    const a = document.createElement('div'); a.className = 'ra'; a.textContent = ap;
-    p.appendChild(t); p.appendChild(a); return p;
-  }
-  route.appendChild(mkPt(f.dep, f.depA));
-  const rl = document.createElement('div'); rl.className = 'rl';
-  const rd = document.createElement('div'); rd.className = 'rd'; rd.textContent = f.dur;
-  const rb = document.createElement('div'); rb.className = 'rbar';
-  const rs = document.createElement('div'); rs.className = 'rs ' + stopsClass(f.stops); rs.textContent = f.stop_txt;
-  rl.appendChild(rd); rl.appendChild(rb); rl.appendChild(rs);
-  route.appendChild(rl);
-  route.appendChild(mkPt(f.arr, f.arrA));
-  mid.appendChild(route);
-
-  const ret = document.createElement('div');
-  ret.className = 'ret';
-  ret.textContent = 'Retour : ' + f.ret;
-  mid.appendChild(ret);
-
+function makeCard(f){
+  const card=document.createElement('div');
+  card.className='card'+(sel.has(f.rank)?' sel':'')+(f.best?' best':'');
+  card.dataset.rank=f.rank;
+  card.addEventListener('click',()=>toggle(f.rank));
+  if(f.best){const bt=document.createElement('div');bt.className='best-tag';bt.textContent='MEILLEUR';card.appendChild(bt);}
+  const chk=document.createElement('div');chk.className='chk';if(sel.has(f.rank))chk.textContent='✓';card.appendChild(chk);
+  const mid=document.createElement('div');mid.className='mid';
+  const ai=document.createElement('div');ai.className='airline';
+  const an=document.createElement('div');an.className='a-name';an.textContent=f.airline;
+  const ac=document.createElement('div');ac.className='a-code';ac.textContent=f.code+' · '+f.source;
+  ai.appendChild(an);ai.appendChild(ac);mid.appendChild(ai);
+  const route=document.createElement('div');route.className='route';
+  function mkPt(t,a){const p=document.createElement('div');p.className='rp';const rt=document.createElement('div');rt.className='rt';rt.textContent=t;const ra=document.createElement('div');ra.className='ra';ra.textContent=a;p.appendChild(rt);p.appendChild(ra);return p;}
+  route.appendChild(mkPt(f.dep,f.depA));
+  const rl=document.createElement('div');rl.className='rl';
+  const rd=document.createElement('div');rd.className='rd';rd.textContent=f.dur;
+  const rb=document.createElement('div');rb.className='rbar';
+  const rs=document.createElement('div');rs.className='rs '+stopsClass(f.stops);rs.textContent=f.stop_txt;
+  rl.appendChild(rd);rl.appendChild(rb);rl.appendChild(rs);route.appendChild(rl);
+  route.appendChild(mkPt(f.arr,f.arrA));mid.appendChild(route);
+  if(f.ret){const ret=document.createElement('div');ret.className='ret';ret.textContent='Retour : '+f.ret;mid.appendChild(ret);}
   card.appendChild(mid);
-
-  const pc = document.createElement('div');
-  pc.className = 'price-col';
-  const prw = document.createElement('div');
-  const prn = document.createElement('div'); prn.className = 'price'; prn.textContent = f.price + ' EUR';
-  const prl = document.createElement('div'); prl.className = 'p-label'; prl.textContent = 'aller-retour';
-  prw.appendChild(prn); prw.appendChild(prl); pc.appendChild(prw);
-  if (f.best) {
-    const sv = document.createElement('div'); sv.className = 'saving'; sv.textContent = '-104 EUR vs normal';
-    pc.appendChild(sv);
-  }
-  const bk = document.createElement('a');
-  bk.className = 'book'; bk.href = f.url || '#'; bk.target = '_blank'; bk.textContent = 'Reserver';
-  bk.addEventListener('click', e => e.stopPropagation());
-  pc.appendChild(bk);
-  card.appendChild(pc);
-
-  return card;
+  const pc=document.createElement('div');pc.className='pc';
+  const prw=document.createElement('div');
+  const prn=document.createElement('div');prn.className='price';prn.textContent=f.price+' €';
+  const prl=document.createElement('div');prl.className='p-label';prl.textContent='aller-retour';
+  prw.appendChild(prn);prw.appendChild(prl);pc.appendChild(prw);
+  if(f.best){const sv=document.createElement('div');sv.className='saving';sv.textContent='-104 € vs normal';pc.appendChild(sv);}
+  const bk=document.createElement('a');bk.className='book';bk.href=f.url||'#';bk.target='_blank';bk.textContent='Réserver';
+  bk.addEventListener('click',e=>e.stopPropagation());pc.appendChild(bk);
+  card.appendChild(pc);return card;
 }
 
-function applySort() {
-  if (sortKey === 'price') sorted = [...DATA].sort((a,b) => a.price - b.price);
-  else if (sortKey === 'duration') sorted = [...DATA].sort((a,b) => a.dur_min - b.dur_min);
-  else if (sortKey === 'stops') sorted = [...DATA].sort((a,b) => a.stops - b.stops);
-  else sorted = [...DATA].sort((a,b) => a.airline.localeCompare(b.airline));
+function applySort(){
+  if(sortKey==='price')sorted=[...DATA].sort((a,b)=>a.price-b.price);
+  else if(sortKey==='duration')sorted=[...DATA].sort((a,b)=>a.dur_min-b.dur_min);
+  else if(sortKey==='stops')sorted=[...DATA].sort((a,b)=>a.stops-b.stops);
+  else sorted=[...DATA].sort((a,b)=>a.airline.localeCompare(b.airline));
 }
 
-function render() {
-  const g = document.getElementById('grid');
-  g.textContent = '';
-  if (!sorted.length) {
-    const d = document.createElement('div'); d.className = 'loading'; d.textContent = 'Aucun vol trouve.';
-    g.appendChild(d);
-  } else {
-    sorted.forEach(f => g.appendChild(makeCard(f)));
-  }
-  document.getElementById('secLabel').textContent = sorted.length + ' vol(s) — trie par ' + sortKey;
+function render(){
+  const gr=g('grid');gr.textContent='';
+  if(!sorted.length){const d=document.createElement('div');d.className='loading';d.textContent='Aucun vol. Cliquez "Ouvrir tous les comparateurs".';gr.appendChild(d);}
+  else sorted.forEach(f=>gr.appendChild(makeCard(f)));
+  g('secLabel').textContent=sorted.length+' vol(s) — trié par '+({price:'prix',duration:'durée',stops:'escales',airline:'compagnie'}[sortKey]);
   updateUI();
 }
 
-function toggle(rank) {
-  if (sel.has(rank)) sel.delete(rank); else sel.add(rank);
-  updateUI();
-  render();
-}
-function selectAll() { DATA.forEach(f => sel.add(f.rank)); render(); }
-function clearAll() { sel.clear(); render(); }
+function toggle(r){if(sel.has(r))sel.delete(r);else sel.add(r);updateUI();render();}
+function selectAll(){DATA.forEach(f=>sel.add(f.rank));render();}
+function clearAll(){sel.clear();render();}
+function updateUI(){const n=sel.size;g('cnt').textContent=n;g('cnt2').textContent=n;g('cpBtn').disabled=n===0;}
+function doSort(key,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');sortKey=key;applySort();render();}
+function openPanel(){g('pdesc').textContent=sel.size+' vol(s) — choisir le format :';g('panel').classList.add('on');}
+function closePanel(){g('panel').classList.remove('on');}
+function getSelected(){return DATA.filter(f=>sel.has(f.rank));}
 
-function updateUI() {
-  const n = sel.size;
-  document.getElementById('cnt').textContent = n;
-  document.getElementById('cnt2').textContent = n;
-  document.getElementById('cpBtn').disabled = n === 0;
-}
-
-function sort(key, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  sortKey = key;
-  applySort();
-  render();
-}
-
-function openPanel() {
-  document.getElementById('pdesc').textContent = sel.size + ' vol(s) selectionne(s) — choisir le format :';
-  document.getElementById('panel').classList.add('on');
-}
-function closePanel() { document.getElementById('panel').classList.remove('on'); }
-
-function getSelected() { return DATA.filter(f => sel.has(f.rank)); }
-
-function copyAs(fmt) {
-  const flights = getSelected();
-  let txt = '';
-  if (fmt === 'text') {
-    txt = 'VOLS PARIS > PRAIA — 6 au 13 mai 2026\n' + '='.repeat(38) + '\n\n';
-    flights.forEach((f, i) => {
-      txt += (i+1) + '. ' + f.airline + '\n';
-      txt += '   Aller  : ' + f.depA + ' ' + f.dep + ' > ' + f.arrA + ' ' + f.arr + ' (' + f.dur + ')\n';
-      txt += '   Escale : ' + f.stop_txt + '\n';
-      txt += '   Retour : ' + f.ret + '\n';
-      txt += '   Prix   : ' + f.price + ' EUR A/R\n';
-      txt += '   Lien   : ' + (f.url || 'voir Google Flights') + '\n\n';
-    });
-  } else if (fmt === 'markdown') {
-    txt = '## Vols Paris > Praia — 6 au 13 mai 2026\n\n';
-    flights.forEach(f => {
-      txt += '### ' + f.airline + ' — ' + f.price + ' EUR\n';
-      txt += '- **Aller** : ' + f.depA + ' ' + f.dep + ' > ' + f.arrA + ' ' + f.arr + ' (' + f.dur + ')\n';
-      txt += '- **Escale** : ' + f.stop_txt + '\n';
-      txt += '- **Retour** : ' + f.ret + '\n';
-      txt += '- **Lien** : ' + (f.url || 'Google Flights') + '\n\n';
-    });
-  } else if (fmt === 'table') {
-    txt = 'Compagnie\tDepart\tArrivee\tDuree\tEscale\tRetour\tPrix EUR\tSource\n';
-    flights.forEach(f => {
-      txt += [f.airline, f.depA+' '+f.dep, f.arrA+' '+f.arr, f.dur, f.stop_txt, f.ret, f.price, f.src || f.source].join('\t') + '\n';
-    });
+function copyAs(fmt){
+  const f=getF(),flights=getSelected();
+  const route=f.depCity+' ('+f.dep+') > '+f.arrCity+' ('+f.arr+') · '+fmtD(f.out)+'-'+fmtD(f.in);
+  let txt='';
+  if(fmt==='text'){
+    txt='VOLS '+route.toUpperCase()+'\n'+'='.repeat(38)+'\n\n';
+    flights.forEach((v,i)=>{txt+=(i+1)+'. '+v.airline+'\n   Aller  : '+v.depA+' '+v.dep+' > '+v.arrA+' '+v.arr+' ('+v.dur+')\n   Escale : '+v.stop_txt+'\n   Retour : '+v.ret+'\n   Prix   : '+v.price+' EUR A/R\n   Lien   : '+(v.url||'')+'\n\n';});
+  } else if(fmt==='markdown'){
+    txt='## Vols '+route+'\n\n';
+    flights.forEach(v=>{txt+='### '+v.airline+' — '+v.price+' EUR\n- **Aller** : '+v.depA+' '+v.dep+' > '+v.arrA+' '+v.arr+' ('+v.dur+')\n- **Escale** : '+v.stop_txt+'\n- **Retour** : '+v.ret+'\n- **Lien** : '+(v.url||'')+'\n\n';});
+  } else if(fmt==='table'){
+    txt='Compagnie\tDepart\tArrivee\tDuree\tEscale\tRetour\tPrix\tSource\n';
+    flights.forEach(v=>{txt+=[v.airline,v.depA+' '+v.dep,v.arrA+' '+v.arr,v.dur,v.stop_txt,v.ret,v.price,v.source].join('\t')+'\n';});
   } else {
-    txt = JSON.stringify(flights.map(f => ({
-      airline: f.airline, depart: f.depA+' '+f.dep, arrivee: f.arrA+' '+f.arr,
-      duree: f.dur, escale: f.stop_txt, retour: f.ret, prix_eur: f.price,
-    })), null, 2);
+    txt=JSON.stringify(flights.map(v=>({airline:v.airline,depart:v.depA+' '+v.dep,arrivee:v.arrA+' '+v.arr,duree:v.dur,escale:v.stop_txt,retour:v.ret,prix_eur:v.price})),null,2);
   }
-  navigator.clipboard.writeText(txt).then(() => {
-    closePanel();
-    const t = document.getElementById('toast');
-    t.classList.add('on');
-    setTimeout(() => t.classList.remove('on'), 2500);
-  });
+  navigator.clipboard.writeText(txt).then(()=>{closePanel();const t=g('toast');t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500);});
+}
+
+async function init(){
+  updateLinks();
+  const live=await loadSB(), log=await loadLog();
+  const alertEl=g('alertBox'), alertTxt=g('alertTxt');
+  if(live){
+    DATA=live;
+    const upd=log?new Date(log.updated_at).toLocaleString('fr-FR'):'Aujourd\'hui';
+    g('updLabel').textContent='Mis à jour '+upd+' · Prix min : '+live[0]?.price+' EUR';
+    g('priceBadge').textContent='💰 Depuis '+live[0]?.price+' EUR';
+    alertEl.classList.add('on');
+    alertTxt.textContent='Prix live depuis Supabase. Minimum : '+live[0]?.price+' EUR avec '+live[0]?.airline+'.';
+  } else {
+    DATA=FALLBACK;
+    g('updLabel').textContent='Données du 25/03/2026 · Cliquer "Ouvrir comparateurs" pour du live';
+    g('priceBadge').textContent='🔴 Paris→Praia : 309 EUR';
+    alertEl.classList.add('on');
+    alertTxt.textContent='Données capturées le 25 mars 2026. Prix minimum constaté : ';
+    const s=document.createElement('strong');s.textContent='309 EUR A/R';
+    alertTxt.appendChild(s);
+    alertTxt.appendChild(document.createTextNode(' avec TAP via Lisbonne. -104 EUR vs prix habituel.'));
+  }
+  applySort();render();
 }
 
 init();
