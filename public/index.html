@@ -92,7 +92,10 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px}
     <div class="sub">Comparez n'importe quelle route · Sélectionnez · Copiez</div>
     <div class="upd"><div class="upd-dot"></div><span id="updLabel">Chargement...</span></div>
   </div>
-  <div class="badge" id="priceBadge">🔎 Recherche</div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+    <div class="badge" id="priceBadge">🔎 Recherche</div>
+    <div id="serverBadge" style="font-size:10px;color:var(--m)">⏳ Vérification serveur…</div>
+  </div>
 </div>
 
 <div class="search-box">
@@ -172,7 +175,31 @@ const FALLBACK=[
   {rank:6,airline:'Air Senegal',code:'HC',dep:'09:45',arr:'16:00',depA:'CDG',arrA:'RAI',dur:'9h15',dur_min:555,stops:1,stop_txt:'1 escale · Dakar (1h30)',price:647,ret:'Via Dakar',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
 ];
 
+const LOCAL_API='http://localhost:8888';
 let DATA=[],sorted=[],sel=new Set(),sortKey='price';
+let localServerAvailable=false;
+
+// Vérifier si le serveur local tourne
+async function checkLocalServer(){
+  try{
+    const r=await fetch(LOCAL_API+'/health',{signal:AbortSignal.timeout(800)});
+    localServerAvailable=r.ok;
+  }catch{localServerAvailable=false;}
+  const badge=g('serverBadge');
+  if(badge){
+    badge.textContent=localServerAvailable?'🟢 Recherche live':'🔴 Recherche live OFF';
+    badge.style.color=localServerAvailable?'var(--green)':'var(--red)';
+  }
+  return localServerAvailable;
+}
+
+async function searchLive(dep,arr,dateOut,dateIn,adults){
+  const url=`${LOCAL_API}/search?dep=${dep}&arr=${arr}&out=${dateOut}&in=${dateIn}&adults=${adults}`;
+  const r=await fetch(url,{signal:AbortSignal.timeout(60000)});
+  if(!r.ok)throw new Error('Serveur erreur '+r.status);
+  const d=await r.json();
+  return d.flights||[];
+}
 
 function g(id){return document.getElementById(id)}
 function fmtD(iso){if(!iso)return '';const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y}
@@ -264,18 +291,44 @@ function showComparators(f){
   grid.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function search(){
+async function search(){
   updateLinks();
   const f=getF();
-  if(isParaiRoute(f)){
-    g('secLabel').textContent='Paris → Praia (Cap Vert)';
-    if(DATA&&DATA.length){applySort();render();}
-    else{
-      // fallback visible si Supabase vide
-      DATA=FALLBACK;applySort();render();
+  await checkLocalServer();
+
+  if(localServerAvailable){
+    // Serveur local dispo → recherche live pour N'IMPORTE QUELLE route
+    const grid=g('grid');
+    g('secLabel').textContent='Recherche en cours…';
+    g('priceBadge').textContent='⏳ Chargement…';
+    grid.textContent='';
+    const loading=document.createElement('div');loading.className='loading';
+    loading.textContent='⏳ Scraping Google Flights pour '+f.depCity+' → '+f.arrCity+'… (20-40 sec)';
+    grid.appendChild(loading);
+    grid.scrollIntoView({behavior:'smooth',block:'start'});
+    try{
+      const flights=await searchLive(f.dep,f.arr,f.out,f.in,f.adults);
+      if(flights&&flights.length){
+        DATA=flights;sel.clear();
+        g('secLabel').textContent=f.depCity+' → '+f.arrCity+' · '+fmtD(f.out)+' – '+fmtD(f.in);
+        g('priceBadge').textContent='💰 Depuis '+flights[0].price+' EUR';
+        applySort();render();
+      } else {
+        loading.textContent='⚠ Aucun résultat — Google Flights a peut-être bloqué. Utilisez les comparateurs ci-dessous.';
+        showComparators(f);
+      }
+    }catch(e){
+      loading.textContent='⚠ Erreur scraping : '+e.message;
+      showComparators(f);
     }
+  } else if(isParaiRoute(f)){
+    // Pas de serveur + route Paris→Praia → données sauvegardées
+    g('secLabel').textContent='Paris → Praia · données du 25/03';
+    DATA=DATA.length?DATA:FALLBACK;
+    applySort();render();
     g('grid').scrollIntoView({behavior:'smooth',block:'start'});
   } else {
+    // Pas de serveur + autre route → liens comparateurs
     showComparators(f);
   }
 }
@@ -404,6 +457,7 @@ async function init(){
 }
 
 init();
+checkLocalServer();
 
 // Touche Entrée sur tous les champs = Rechercher
 ['depCity','arrCity','depCode','arrCode','dateOut','dateIn','adults'].forEach(id=>{
