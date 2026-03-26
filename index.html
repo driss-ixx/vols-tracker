@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vols Paris Praia · 6-13 mai 2026</title>
+<style>
+:root{--bg:#0d1117;--s:#161b22;--s2:#21262d;--b:#30363d;--accent:#f0a500;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--t:#e6edf3;--m:#8b949e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:24px;min-height:100vh;max-width:900px;margin:0 auto}
+h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.sub{font-size:13px;color:var(--m)}
+.header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.badge{background:#2a1f00;border:1px solid var(--accent);color:var(--accent);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.alert{background:linear-gradient(135deg,#0d2818,#0d1f30);border:1px solid #2ea043;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:14px;display:flex;gap:12px;align-items:center}
+.alert strong{color:var(--green)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s;text-decoration:none}
+.btn-sec{background:var(--s2);color:var(--t);border:1px solid var(--b)}
+.btn-sec:hover{background:#2d333b}
+.btn-green{background:#1a4a2a;color:var(--green);border:1px solid #2ea043}
+.btn-green:hover{background:#1e5a32}
+.btn-green:disabled{opacity:.4;cursor:not-allowed}
+.btn-blue{background:var(--blue);color:#000}
+.btn-blue:hover{background:#79c0ff}
+.sel-count{font-size:13px;color:var(--m);margin-left:auto}
+.sel-count span{color:var(--green);font-weight:700}
+.tabs{display:flex;gap:4px;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:4px;width:fit-content;margin-bottom:16px}
+.tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;color:var(--m);cursor:pointer;font-size:13px;transition:all .15s}
+.tab.active{background:var(--s2);color:var(--t);font-weight:600}
+.tab:hover:not(.active){color:var(--t)}
+.grid{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all .15s;position:relative;display:grid;grid-template-columns:24px 1fr auto;gap:16px;align-items:start}
+.card:hover{border-color:#444c56;background:#1c2128}
+.card.sel{background:#0d1f0d;border-color:var(--green)}
+.card.best{border-color:var(--accent)}
+.best-tag{position:absolute;top:-1px;left:20px;background:var(--accent);color:#000;font-size:10px;font-weight:800;padding:2px 10px;border-radius:0 0 6px 6px;letter-spacing:.5px}
+.chk{width:20px;height:20px;border:2px solid var(--b);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:2px}
+.card.sel .chk{background:var(--green);border-color:var(--green);color:#000;font-weight:700;font-size:13px}
+.mid{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:center}
+.airline{display:flex;flex-direction:column;gap:3px}
+.a-name{font-size:13px;font-weight:700}
+.a-code{font-size:11px;color:var(--m)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--b);background:var(--s2);color:var(--m)}
+.route{display:flex;align-items:center;gap:10px;flex:1}
+.rp{text-align:center;flex-shrink:0}
+.rt{font-size:18px;font-weight:700}
+.ra{font-size:11px;color:var(--m);font-weight:600}
+.rl{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rd{font-size:11px;color:var(--m)}
+.rbar{width:100%;height:1px;background:var(--b)}
+.rs{font-size:11px}
+.rs.direct{color:var(--green)}
+.rs.one{color:var(--accent)}
+.rs.two{color:var(--red)}
+.ret{font-size:11px;color:var(--m);margin-top:6px;grid-column:1/-1}
+.price-col{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;min-width:100px}
+.price{font-size:26px;font-weight:800;line-height:1}
+.p-label{font-size:11px;color:var(--m)}
+.saving{background:#0d2818;color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;border:1px solid #2ea043}
+.book{display:inline-flex;align-items:center;gap:4px;background:var(--blue);color:#000;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none;transition:all .15s}
+.book:hover{background:#79c0ff}
+.panel{position:fixed;bottom:24px;right:24px;background:var(--s);border:1px solid var(--b);border-radius:12px;padding:16px;width:300px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;flex-direction:column;gap:10px;z-index:100}
+.panel.on{display:flex}
+.panel h3{font-size:14px}
+.panel p{font-size:12px;color:var(--m)}
+.fmt-btn{padding:9px 12px;border-radius:6px;border:1px solid var(--b);background:var(--s2);color:var(--t);cursor:pointer;font-size:12px;text-align:left;transition:all .15s;width:100%}
+.fmt-btn:hover{border-color:var(--accent);color:var(--accent)}
+.toast{position:fixed;bottom:80px;right:24px;background:var(--green);color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:200}
+.toast.on{opacity:1;transform:translateY(0)}
+.footer{font-size:11px;color:var(--m);margin-top:20px;text-align:center}
+.footer a{color:var(--blue);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.sec-label{font-size:11px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.upd{font-size:12px;color:var(--m);display:flex;align-items:center;gap:8px;margin-top:6px}
+.upd-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.loading{text-align:center;padding:40px;color:var(--m);font-size:14px}
+.error-msg{background:#2a0d0d;border:1px solid var(--red);border-radius:8px;padding:14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
+@media(max-width:640px){.mid{grid-template-columns:1fr}.card{grid-template-columns:24px 1fr}.price-col{align-items:flex-start}.panel{width:calc(100vw - 48px)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>✈ Paris → Praia &nbsp;·&nbsp; 6–13 mai 2026</h1>
+    <div class="sub">1 adulte · Classe éco · Aller-retour · Mise à jour auto 5h/jour</div>
+    <div class="upd">
+      <div class="upd-dot"></div>
+      <span id="updLabel">Chargement des prix...</span>
+    </div>
+  </div>
+  <div class="badge">🔴 Prix actuellement BAS</div>
+</div>
+
+<div class="error-msg" id="errorMsg"></div>
+
+<div class="alert" id="alertBox" style="display:none">
+  <span style="font-size:20px">💡</span>
+  <span id="alertTxt"></span>
+</div>
+
+<div class="toolbar">
+  <button class="btn btn-sec" onclick="selectAll()">☑ Tout sélectionner</button>
+  <button class="btn btn-sec" onclick="clearAll()">✕ Désélectionner</button>
+  <button class="btn btn-blue" onclick="refresh()">🔄 Actualiser</button>
+  <button class="btn btn-green" id="cpBtn" disabled onclick="openPanel()">📋 Copier (<span id="cnt">0</span>)</button>
+  <div class="sel-count">Sélection : <span id="cnt2">0</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="sort('price',this)">💰 Prix</button>
+  <button class="tab" onclick="sort('duration',this)">⏱ Durée</button>
+  <button class="tab" onclick="sort('stops',this)">🔗 Escales</button>
+  <button class="tab" onclick="sort('airline',this)">✈ Compagnie</button>
+</div>
+
+<div class="sec-label" id="secLabel">Chargement...</div>
+<div class="grid" id="grid"><div class="loading">⏳ Récupération des prix en cours...</div></div>
+
+<div class="footer">
+  Mise à jour auto chaque jour à 5h · Sources live :
+  <a href="https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR" target="_blank">Google Flights</a>
+  · <a href="https://www.kiwi.com/en/search/results/paris-france/praia-cape-verde/2026-05-06/2026-05-13/?adults=1&currency=EUR" target="_blank">Kiwi</a>
+  · <a href="https://www.momondo.fr/flight-search/Paris-PAR/Praia-RAI/2026-05-06/2026-05-13?adults=1" target="_blank">Momondo</a>
+</div>
+
+<div class="panel" id="panel">
+  <h3>📋 Copier la sélection</h3>
+  <p id="pdesc"></p>
+  <button class="fmt-btn" onclick="copyAs('text')">📝 Texte simple (WhatsApp, SMS)</button>
+  <button class="fmt-btn" onclick="copyAs('markdown')">📄 Markdown (Notion, Obsidian)</button>
+  <button class="fmt-btn" onclick="copyAs('table')">📊 Tableau TSV (Excel)</button>
+  <button class="fmt-btn" onclick="copyAs('json')">💾 JSON</button>
+  <button class="btn btn-sec" style="font-size:12px;margin-top:4px" onclick="closePanel()">✕ Fermer</button>
+</div>
+
+<div class="toast" id="toast">✓ Copié !</div>
+
+<script>
+// Config Supabase (public anon key — lecture seule)
+const SB_URL = 'https://iagsrbmeviwmozauhenk.supabase.co';
+const SB_ANON = 'SUPABASE_ANON_KEY_PLACEHOLDER';
+
+// Données de fallback (capturées le 25 mars 2026 sur Google Flights)
+const FALLBACK = [
+  {rank:1,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'9h25',dur_min:565,stops:1,stop_txt:'1 escale · Lisbonne (2h30)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · 1x LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:true},
+  {rank:2,airline:'TAP Air Portugal',code:'TP',dep:'21:15',arr:'11:20+1',depA:'ORY',arrA:'RAI',dur:'17h05',dur_min:1025,stops:1,stop_txt:'1 escale · Lisbonne (10h15)',price:309,ret:'RAI 00:10 > ORY 13:50 · 10h40 · 1x LIS',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
+  {rank:3,airline:'TAP Air Portugal',code:'TP',dep:'16:45',arr:'23:10',depA:'ORY',arrA:'RAI',dur:'29h15',dur_min:1755,stops:1,stop_txt:'1 escale · Lisbonne (self-transfer)',price:324,ret:'RAI 00:10 > ORY 23:00 · 19h50 · auto',source:'Kiwi.com 25/03',url:'https://www.kiwi.com/en/search/results/paris-france/praia-cape-verde/2026-05-06/2026-05-13/?adults=1&currency=EUR',best:false},
+  {rank:4,airline:'Royal Air Maroc',code:'AT',dep:'18:30',arr:'02:50+1',depA:'CDG',arrA:'RAI',dur:'11h20',dur_min:680,stops:2,stop_txt:'2 escales · Casablanca + Sao Vicente',price:383,ret:'Via Casablanca',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
+  {rank:5,airline:'Royal Air Maroc',code:'AT',dep:'19:15',arr:'02:50+1',depA:'ORY',arrA:'RAI',dur:'10h35',dur_min:635,stops:2,stop_txt:'2 escales · Casablanca + Sao Vicente',price:410,ret:'Via Casablanca',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
+  {rank:6,airline:'Air Senegal',code:'HC',dep:'09:45',arr:'16:00',depA:'CDG',arrA:'RAI',dur:'9h15',dur_min:555,stops:1,stop_txt:'1 escale · Dakar (1h30)',price:647,ret:'Via Dakar',source:'Google Flights 25/03',url:'https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA1LTA2agcIARIDUEFScgcIARIDUkFJGh4SCjIwMjYtMDUtMTNqBwgBEgNSQUlyBwgBEgNQQVIiASoqAggBQgIIAUgB&hl=fr&curr=EUR',best:false},
+];
+
+let DATA = [];
+let sorted = [];
+let sel = new Set();
+let sortKey = 'price';
+
+async function loadFromSupabase() {
+  if (SB_ANON === 'SUPABASE_ANON_KEY_PLACEHOLDER') return null;
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/vols_praia?select=*&order=price.asc', {
+      headers: {
+        'apikey': SB_ANON,
+        'Authorization': 'Bearer ' + SB_ANON,
+      }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data && data.length > 0 ? data : null;
+  } catch { return null; }
+}
+
+async function loadLastUpdate() {
+  if (SB_ANON === 'SUPABASE_ANON_KEY_PLACEHOLDER') return null;
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/vols_praia_log?select=updated_at,min_price&order=updated_at.desc&limit=1', {
+      headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + SB_ANON }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data && data.length > 0 ? data[0] : null;
+  } catch { return null; }
+}
+
+async function refresh() {
+  document.getElementById('grid').textContent = '';
+  const loading = document.createElement('div');
+  loading.className = 'loading';
+  loading.textContent = 'Actualisation...';
+  document.getElementById('grid').appendChild(loading);
+  await init();
+}
+
+async function init() {
+  const live = await loadFromSupabase();
+  const log = await loadLastUpdate();
+
+  if (live) {
+    DATA = live;
+    const upd = log ? new Date(log.updated_at).toLocaleString('fr-FR') : 'Aujourd\'hui';
+    document.getElementById('updLabel').textContent = 'Mis a jour le ' + upd + ' · Prix min : ' + (log?.min_price || live[0]?.price) + ' EUR';
+    showAlert('Les prix sont mis a jour automatiquement chaque matin a 5h. Prix minimum actuel : <strong>' + live[0]?.price + ' EUR</strong> avec ' + live[0]?.airline + '.');
+  } else {
+    DATA = FALLBACK;
+    document.getElementById('updLabel').textContent = 'Donnees du 25 mars 2026 (fallback) · Clic Actualiser pour rafraichir';
+    showAlert('Donnees capturees le 25 mars 2026 sur Google Flights. Prix minimum : <strong>309 EUR A/R</strong> avec TAP via Lisbonne. <strong>-104 EUR</strong> vs prix habituel.');
+  }
+
+  applySort();
+  render();
+}
+
+function showAlert(txt) {
+  const box = document.getElementById('alertBox');
+  const t = document.getElementById('alertTxt');
+  box.style.display = 'flex';
+  t.textContent = txt.replace(/<[^>]+>/g, '');
+  const strong = txt.match(/<strong>(.*?)<\/strong>/g);
+  if (strong) {
+    t.textContent = '';
+    let parts = txt.split(/<strong>|<\/strong>/);
+    parts.forEach((p, i) => {
+      if (i % 2 === 0) { const s = document.createTextNode(p); t.appendChild(s); }
+      else { const s = document.createElement('strong'); s.textContent = p; t.appendChild(s); }
+    });
+  }
+}
+
+function stopsClass(n){ return n===0?'direct':n===1?'one':'two'; }
+
+function makeCard(f) {
+  const card = document.createElement('div');
+  card.className = 'card' + (sel.has(f.rank)?' sel':'') + (f.best?' best':'');
+  card.dataset.rank = f.rank;
+  card.addEventListener('click', () => toggle(f.rank));
+
+  if (f.best) {
+    const bt = document.createElement('div');
+    bt.className = 'best-tag';
+    bt.textContent = 'MEILLEUR';
+    card.appendChild(bt);
+  }
+
+  const chk = document.createElement('div');
+  chk.className = 'chk';
+  if (sel.has(f.rank)) chk.textContent = '✓';
+  card.appendChild(chk);
+
+  const mid = document.createElement('div');
+  mid.className = 'mid';
+
+  const ai = document.createElement('div');
+  ai.className = 'airline';
+  const an = document.createElement('div'); an.className = 'a-name'; an.textContent = f.airline;
+  const ac = document.createElement('div'); ac.className = 'a-code'; ac.textContent = f.code + ' · ' + f.source;
+  ai.appendChild(an); ai.appendChild(ac);
+  mid.appendChild(ai);
+
+  const route = document.createElement('div');
+  route.className = 'route';
+  function mkPt(time, ap) {
+    const p = document.createElement('div'); p.className = 'rp';
+    const t = document.createElement('div'); t.className = 'rt'; t.textContent = time;
+    const a = document.createElement('div'); a.className = 'ra'; a.textContent = ap;
+    p.appendChild(t); p.appendChild(a); return p;
+  }
+  route.appendChild(mkPt(f.dep, f.depA));
+  const rl = document.createElement('div'); rl.className = 'rl';
+  const rd = document.createElement('div'); rd.className = 'rd'; rd.textContent = f.dur;
+  const rb = document.createElement('div'); rb.className = 'rbar';
+  const rs = document.createElement('div'); rs.className = 'rs ' + stopsClass(f.stops); rs.textContent = f.stop_txt;
+  rl.appendChild(rd); rl.appendChild(rb); rl.appendChild(rs);
+  route.appendChild(rl);
+  route.appendChild(mkPt(f.arr, f.arrA));
+  mid.appendChild(route);
+
+  const ret = document.createElement('div');
+  ret.className = 'ret';
+  ret.textContent = 'Retour : ' + f.ret;
+  mid.appendChild(ret);
+
+  card.appendChild(mid);
+
+  const pc = document.createElement('div');
+  pc.className = 'price-col';
+  const prw = document.createElement('div');
+  const prn = document.createElement('div'); prn.className = 'price'; prn.textContent = f.price + ' EUR';
+  const prl = document.createElement('div'); prl.className = 'p-label'; prl.textContent = 'aller-retour';
+  prw.appendChild(prn); prw.appendChild(prl); pc.appendChild(prw);
+  if (f.best) {
+    const sv = document.createElement('div'); sv.className = 'saving'; sv.textContent = '-104 EUR vs normal';
+    pc.appendChild(sv);
+  }
+  const bk = document.createElement('a');
+  bk.className = 'book'; bk.href = f.url || '#'; bk.target = '_blank'; bk.textContent = 'Reserver';
+  bk.addEventListener('click', e => e.stopPropagation());
+  pc.appendChild(bk);
+  card.appendChild(pc);
+
+  return card;
+}
+
+function applySort() {
+  if (sortKey === 'price') sorted = [...DATA].sort((a,b) => a.price - b.price);
+  else if (sortKey === 'duration') sorted = [...DATA].sort((a,b) => a.dur_min - b.dur_min);
+  else if (sortKey === 'stops') sorted = [...DATA].sort((a,b) => a.stops - b.stops);
+  else sorted = [...DATA].sort((a,b) => a.airline.localeCompare(b.airline));
+}
+
+function render() {
+  const g = document.getElementById('grid');
+  g.textContent = '';
+  if (!sorted.length) {
+    const d = document.createElement('div'); d.className = 'loading'; d.textContent = 'Aucun vol trouve.';
+    g.appendChild(d);
+  } else {
+    sorted.forEach(f => g.appendChild(makeCard(f)));
+  }
+  document.getElementById('secLabel').textContent = sorted.length + ' vol(s) — trie par ' + sortKey;
+  updateUI();
+}
+
+function toggle(rank) {
+  if (sel.has(rank)) sel.delete(rank); else sel.add(rank);
+  updateUI();
+  render();
+}
+function selectAll() { DATA.forEach(f => sel.add(f.rank)); render(); }
+function clearAll() { sel.clear(); render(); }
+
+function updateUI() {
+  const n = sel.size;
+  document.getElementById('cnt').textContent = n;
+  document.getElementById('cnt2').textContent = n;
+  document.getElementById('cpBtn').disabled = n === 0;
+}
+
+function sort(key, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  sortKey = key;
+  applySort();
+  render();
+}
+
+function openPanel() {
+  document.getElementById('pdesc').textContent = sel.size + ' vol(s) selectionne(s) — choisir le format :';
+  document.getElementById('panel').classList.add('on');
+}
+function closePanel() { document.getElementById('panel').classList.remove('on'); }
+
+function getSelected() { return DATA.filter(f => sel.has(f.rank)); }
+
+function copyAs(fmt) {
+  const flights = getSelected();
+  let txt = '';
+  if (fmt === 'text') {
+    txt = 'VOLS PARIS > PRAIA — 6 au 13 mai 2026\n' + '='.repeat(38) + '\n\n';
+    flights.forEach((f, i) => {
+      txt += (i+1) + '. ' + f.airline + '\n';
+      txt += '   Aller  : ' + f.depA + ' ' + f.dep + ' > ' + f.arrA + ' ' + f.arr + ' (' + f.dur + ')\n';
+      txt += '   Escale : ' + f.stop_txt + '\n';
+      txt += '   Retour : ' + f.ret + '\n';
+      txt += '   Prix   : ' + f.price + ' EUR A/R\n';
+      txt += '   Lien   : ' + (f.url || 'voir Google Flights') + '\n\n';
+    });
+  } else if (fmt === 'markdown') {
+    txt = '## Vols Paris > Praia — 6 au 13 mai 2026\n\n';
+    flights.forEach(f => {
+      txt += '### ' + f.airline + ' — ' + f.price + ' EUR\n';
+      txt += '- **Aller** : ' + f.depA + ' ' + f.dep + ' > ' + f.arrA + ' ' + f.arr + ' (' + f.dur + ')\n';
+      txt += '- **Escale** : ' + f.stop_txt + '\n';
+      txt += '- **Retour** : ' + f.ret + '\n';
+      txt += '- **Lien** : ' + (f.url || 'Google Flights') + '\n\n';
+    });
+  } else if (fmt === 'table') {
+    txt = 'Compagnie\tDepart\tArrivee\tDuree\tEscale\tRetour\tPrix EUR\tSource\n';
+    flights.forEach(f => {
+      txt += [f.airline, f.depA+' '+f.dep, f.arrA+' '+f.arr, f.dur, f.stop_txt, f.ret, f.price, f.src || f.source].join('\t') + '\n';
+    });
+  } else {
+    txt = JSON.stringify(flights.map(f => ({
+      airline: f.airline, depart: f.depA+' '+f.dep, arrivee: f.arrA+' '+f.arr,
+      duree: f.dur, escale: f.stop_txt, retour: f.ret, prix_eur: f.price,
+    })), null, 2);
+  }
+  navigator.clipboard.writeText(txt).then(() => {
+    closePanel();
+    const t = document.getElementById('toast');
+    t.classList.add('on');
+    setTimeout(() => t.classList.remove('on'), 2500);
+  });
+}
+
+init();
+</script>
+</body>
+</html>

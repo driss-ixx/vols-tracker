@@ -1,0 +1,13 @@
+{
+  "name": "vols-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'static site'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
