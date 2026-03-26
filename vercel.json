@@ -1,5 +1,11 @@
 {
   "outputDirectory": "public",
+  "functions": {
+    "api/search.py": {
+      "runtime": "vercel-python@4.3.1",
+      "maxDuration": 60
+    }
+  },
   "crons": [
     {
       "path": "/api/update",

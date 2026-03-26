@@ -177,6 +177,7 @@ const FALLBACK=[
 ];
 
 const LOCAL_API='http://localhost:8888';
+const VERCEL_API='/api/search';
 let DATA=[],sorted=[],sel=new Set(),sortKey='price';
 let localServerAvailable=false;
 
@@ -186,20 +187,25 @@ async function checkLocalServer(){
     const r=await fetch(LOCAL_API+'/health',{signal:AbortSignal.timeout(800)});
     localServerAvailable=r.ok;
   }catch{localServerAvailable=false;}
-  const badge=g('serverBadge');
-  if(badge){
-    badge.textContent=localServerAvailable?'🟢 Recherche live':'🔴 Recherche live OFF';
-    badge.style.color=localServerAvailable?'var(--green)':'var(--red)';
-  }
   return localServerAvailable;
 }
 
 async function searchLive(dep,arr,dateOut,dateIn,adults){
-  const url=`${LOCAL_API}/search?dep=${dep}&arr=${arr}&out=${dateOut}&in=${dateIn}&adults=${adults}`;
-  const r=await fetch(url,{signal:AbortSignal.timeout(60000)});
-  if(!r.ok)throw new Error('Serveur erreur '+r.status);
-  const d=await r.json();
-  return d.flights||[];
+  // 1. Essayer l'API Vercel (serverless, fonctionne partout)
+  try{
+    const url=`${VERCEL_API}?dep=${dep}&arr=${arr}&out=${dateOut}&in=${dateIn}&adults=${adults}`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(45000)});
+    if(r.ok){const d=await r.json();if(d.flights&&d.flights.length)return d.flights;}
+  }catch{}
+  // 2. Fallback : serveur local (si lancé)
+  if(localServerAvailable){
+    const url=`${LOCAL_API}/search?dep=${dep}&arr=${arr}&out=${dateOut}&in=${dateIn}&adults=${adults}`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(60000)});
+    if(!r.ok)throw new Error('Serveur erreur '+r.status);
+    const d=await r.json();
+    return d.flights||[];
+  }
+  return [];
 }
 
 function g(id){return document.getElementById(id)}
@@ -295,41 +301,30 @@ function showComparators(f){
 async function search(){
   updateLinks();
   const f=getF();
-  await checkLocalServer();
+  checkLocalServer();
 
-  if(localServerAvailable){
-    // Serveur local dispo → recherche live pour N'IMPORTE QUELLE route
-    const grid=g('grid');
-    g('secLabel').textContent='Recherche en cours…';
-    g('priceBadge').textContent='⏳ Chargement…';
-    grid.textContent='';
-    const loading=document.createElement('div');loading.className='loading';
-    loading.textContent='⏳ Scraping Google Flights pour '+f.depCity+' → '+f.arrCity+'… (20-40 sec)';
-    grid.appendChild(loading);
-    grid.scrollIntoView({behavior:'smooth',block:'start'});
-    try{
-      const flights=await searchLive(f.dep,f.arr,f.out,f.in,f.adults);
-      if(flights&&flights.length){
-        DATA=flights;sel.clear();
-        g('secLabel').textContent=f.depCity+' → '+f.arrCity+' · '+fmtD(f.out)+' – '+fmtD(f.in);
-        g('priceBadge').textContent='💰 Depuis '+flights[0].price+' EUR';
-        applySort();render();
-      } else {
-        loading.textContent='⚠ Aucun résultat — Google Flights a peut-être bloqué. Utilisez les comparateurs ci-dessous.';
-        showComparators(f);
-      }
-    }catch(e){
-      loading.textContent='⚠ Erreur scraping : '+e.message;
+  const grid=g('grid');
+  g('secLabel').textContent='Recherche en cours…';
+  g('priceBadge').textContent='⏳ Chargement…';
+  grid.textContent='';
+  const loading=document.createElement('div');loading.className='loading';
+  loading.textContent='Recherche '+f.depCity+' -> '+f.arrCity+' sur Google Flights…';
+  grid.appendChild(loading);
+  grid.scrollIntoView({behavior:'smooth',block:'start'});
+
+  try{
+    const flights=await searchLive(f.dep,f.arr,f.out,f.in,f.adults);
+    if(flights&&flights.length){
+      DATA=flights;sel.clear();
+      g('secLabel').textContent=f.depCity+' -> '+f.arrCity+' · '+fmtD(f.out)+' – '+fmtD(f.in);
+      g('priceBadge').textContent='Depuis '+flights[0].price+' €';
+      applySort();render();
+    }else{
+      grid.textContent='';
       showComparators(f);
     }
-  } else if(isParaiRoute(f)){
-    // Pas de serveur + route Paris→Praia → données sauvegardées
-    g('secLabel').textContent='Paris → Praia · données du 25/03';
-    DATA=DATA.length?DATA:FALLBACK;
-    applySort();render();
-    g('grid').scrollIntoView({behavior:'smooth',block:'start'});
-  } else {
-    // Pas de serveur + autre route → liens comparateurs
+  }catch(e){
+    grid.textContent='';
     showComparators(f);
   }
 }
@@ -481,7 +476,6 @@ async function init(){
 }
 
 init();
-checkLocalServer();
 
 // Touche Entrée sur tous les champs = Rechercher
 ['depCity','arrCity','depCode','arrCode','dateOut','dateIn','adults'].forEach(id=>{
